@@ -3,6 +3,7 @@ const mongodb = require("mongodb");
 
 // Initialize connection, mongoclient
 const MongoClient = mongodb.MongoClient;
+const ObjectId = mongodb.ObjectID;
 
 const log = console.log;
 
@@ -20,56 +21,36 @@ MongoClient.connect(
     }
     const db = client.db(dataBaseName);
     log(`Connected to DB correctly!`);
+    // find returns a cursor i.e pointer to data not actual data. toArray, count, limit are run on cursor
 
-    // db.collection("users").insertOne(
+    // const updateNamePromise = db.collection("tasks").updateMany(
     //   {
-    //     name: "Jane",
-    //     age: 27,
+    //     completed: false,
     //   },
-    //   (error, result) => {
-    //     if (error) {
-    //       return log("Unable to insert!!", error);
-    //     }
-    //     log(result.insertedId);
+    //   {
+    //     $set: {
+    //       completed: true,
+    //     },
     //   }
     // );
 
-    // db.collection("users").insertMany(
-    //   [
-    //     {
-    //       name: "T2",
-    //       age: 27,
-    //     },
-    //     {
-    //       name: "T1",
-    //       age: 25,
-    //     },
-    //   ],
-    //   (error, result) => {
-    //     if (error) {
-    //       return log("Unable to insert!!", error);
-    //     }
-    //     log(result.insertedIds);
-    //   }
-    // );
+    // updateNamePromise
+    //   .then((res) => {
+    //     console.log(res);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
 
-    db.collection("tasks").insertMany(
-      [
-        {
-          description: "Laundry",
-          completed: true,
-        },
-        {
-          description: "Groceries",
-          completed: false,
-        },
-      ],
-      (error, result) => {
-        if (error) {
-          return log("Unable to insert!!", error);
-        }
-        log(result.insertedIds);
-      }
-    );
+    const deletePromise = db.collection("users").deleteOne({
+      age: 25,
+    });
+    deletePromise
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 );
