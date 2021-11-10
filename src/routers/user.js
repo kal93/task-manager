@@ -1,11 +1,26 @@
 const express = require("express");
 const chalk = require("chalk");
+const multer = require("multer");
 const User = require("../models/user");
 const Task = require("../models/task");
 const authMiddleWare = require("../middlewares/auth");
 const log = console.log;
 
 const router = new express.Router();
+
+// configure multer for uploading images and set up destination directory for storage
+const fileUpload = multer({
+  limits: {
+    fileSize: 1000000, // in bytes 1MB = 1000000 Bytes
+  },
+  fileFilter(req, file, callback) {
+    const fileName = file.originalname;
+    if (!fileName.match(/\.(jpg|jpeg|png)$/)) {
+      return callback(new Error("Unsupported file type."));
+    }
+    callback(undefined, true);
+  },
+});
 
 // =============== USER ROUTES =====================
 
@@ -126,6 +141,34 @@ router.delete("/users/me", authMiddleWare, async (req, res) => {
     res.send({ deletedUser });
   } catch (error) {
     log(error);
+    res.status(500).send({ error });
+  }
+});
+
+router.post(
+  "/users/me/avatar",
+  authMiddleWare,
+  fileUpload.single("avatar"),
+  async (req, res) => {
+    // req.file is added by multer
+    req.user.avatar = req.file.buffer;
+    await req.user.save(); // save fn is from mongoose
+    res.sendStatus(200);
+  },
+  // below callback gets triggered when a middlerware throws an error, in this case multer is the middleware.
+  // works for any express middleware and not specific to multer
+  (error, req, res, next) => {
+    res.status(400).send({ error: error.message });
+  }
+);
+
+router.delete("/users/me/avatar", authMiddleWare, async (req, res) => {
+  const user = req.user;
+  try {
+    user.avatar = undefined;
+    await user.save(); // save fn is from mongoose
+    res.status(200).send({ message: "Avatar deleted successfully." });
+  } catch (error) {
     res.status(500).send({ error });
   }
 });
