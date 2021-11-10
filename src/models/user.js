@@ -96,6 +96,7 @@ userSchema.methods.getPublicProfile = function () {
 
   delete userObject.password;
   delete userObject.tokens;
+  delete userObject.avatar;
 
   return userObject;
 };

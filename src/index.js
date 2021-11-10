@@ -25,25 +25,6 @@ const port = process.env.PORT || 3000;
 //   }
 // });
 
-const multer = require("multer");
-const upload = multer({
-  dest: "images",
-  limits: {
-    fileSize: 1000000, // in bytes 1MB = 1000000 Bytes
-  },
-  fileFilter(req, file, callback) {
-    const fileName = file.originalname;
-    if (!fileName.match(/\.(doc|docx)$/)) {
-      return callback(new Error("Unsupported file type."));
-    }
-    callback(undefined, true);
-  },
-});
-
-app.post("/upload", upload.single("upload"), async (req, res) => {
-  res.sendStatus(200);
-});
-
 app.use(express.json());
 
 app.use(userRoutes);

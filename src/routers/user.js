@@ -1,6 +1,7 @@
 const express = require("express");
 const chalk = require("chalk");
 const multer = require("multer");
+const sharp = require("sharp");
 const User = require("../models/user");
 const Task = require("../models/task");
 const authMiddleWare = require("../middlewares/auth");
@@ -151,7 +152,11 @@ router.post(
   fileUpload.single("avatar"),
   async (req, res) => {
     // req.file is added by multer
-    req.user.avatar = req.file.buffer;
+    const buffer = await sharp(req.file.buffer)
+      .resize({ width: 250, height: 250 })
+      .png()
+      .toBuffer();
+    req.user.avatar = buffer;
     await req.user.save(); // save fn is from mongoose
     res.sendStatus(200);
   },
@@ -170,6 +175,22 @@ router.delete("/users/me/avatar", authMiddleWare, async (req, res) => {
     res.status(200).send({ message: "Avatar deleted successfully." });
   } catch (error) {
     res.status(500).send({ error });
+  }
+});
+
+// serve up the avatar
+router.get("/users/:id/avatar", async (req, res) => {
+  const _id = req.params.id;
+  try {
+    const user = await User.findById(_id);
+    if (!user) {
+      return res.status(404).send({ error: "User not found." });
+    }
+    // tell requester what type of data is being sent using response header
+    res.set("Content-Type", "image/png");
+    res.send(user.avatar);
+  } catch (error) {
+    res.status(404).send({ error });
   }
 });
 
