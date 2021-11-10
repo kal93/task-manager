@@ -6,53 +6,56 @@ const Task = require("../models/task");
 
 const log = console.log;
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  age: {
-    type: Number,
-    default: 0,
-    validate(value) {
-      if (value < 0) {
-        throw new Error("Age must be a positive number.");
-      }
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
     },
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    lowercase: true,
-    validate(value) {
-      if (!validator.isEmail(value)) {
-        throw new Error("Email is invalid.");
-      }
-    },
-  },
-  password: {
-    type: String,
-    required: true,
-    trim: true,
-    minLength: 7,
-    validate(value) {
-      if (value.toLowerCase().includes("password")) {
-        throw new Error("Password must not contain keyword password");
-      }
-    },
-  },
-  tokens: [
-    {
-      token: {
-        type: String,
-        required: true,
+    age: {
+      type: Number,
+      default: 0,
+      validate(value) {
+        if (value < 0) {
+          throw new Error("Age must be a positive number.");
+        }
       },
     },
-  ],
-});
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Email is invalid.");
+        }
+      },
+    },
+    password: {
+      type: String,
+      required: true,
+      trim: true,
+      minLength: 7,
+      validate(value) {
+        if (value.toLowerCase().includes("password")) {
+          throw new Error("Password must not contain keyword password");
+        }
+      },
+    },
+    tokens: [
+      {
+        token: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
 // set up virtual prop, not actual data but relnship between user and task, doesn't change document. It is way for mongoose to figure out how these are related
 // NOT stored in DB
