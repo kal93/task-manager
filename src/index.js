@@ -5,7 +5,7 @@ const taskRoutes = require("./routers/task");
 const log = console.log;
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 // express middlewares must come before app.use route registeration
 // app.use((req, res, next) => {
@@ -39,11 +39,11 @@ app.listen(port, () => {
 // const myFn = async () => {
 //   const token = jwt.sign(
 //     { _id: "123", email: "tenten@tailedfox.com" },
-//     "thisisme",
+//     process.env.JWT_SECRET,
 //     { expiresIn: "1 day" }
 //   );
 //   log(token);
-//   const data = jwt.verify(token, "thisisme");
+//   const data = jwt.verify(token, process.env.JWT_SECRET);
 //   log(data);
 // };
 

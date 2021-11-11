@@ -76,7 +76,7 @@ userSchema.methods.generateAuthToken = async function () {
   // generate token using jwt lib
   const token = jwt.sign(
     { _id: user._id.toString(), email: user.email }, // info to be added in token
-    "thisisme", // secret
+    process.env.JWT_SECRET, // secret
     { expiresIn: "1 days" } // expiration time
   );
 
